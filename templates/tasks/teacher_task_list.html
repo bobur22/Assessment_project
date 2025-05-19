@@ -1,0 +1,30 @@
+{% extends 'layouts/base.html' %}
+{% block title %}My Tasks{% endblock %}
+{% block content %}
+<h2>My Uploaded Tasks</h2>
+<a href="{% url 'upload-task' %}" class="btn btn-success mb-3">Upload New Task</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Type</th><th>Maqola</th><th>Tezis</th><th>Submitted At</th><th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.get_task_type_display }}</td>
+            <td>{% if task.maqola %}<a href="{{ task.maqola.url }}" target="_blank">Download</a>{% endif %}</td>
+            <td>{% if task.tezis %}<a href="{{ task.tezis.url }}"  target="_blank">Download</a>{% endif %}</td>
+            <td>{{ task.submitted_at }}</td>
+            <td>
+                {% if task.score %}
+                    ✅ Assessed: {{ task.score }} points
+                {% else %}
+                    ⏳ Not yet assessed
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

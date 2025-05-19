@@ -1,0 +1,24 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Dekan Task View{% endblock %}
+{% block content %}
+<h2>All Assessed Tasks</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Teacher</th><th>Type</th><th>Maqola</th><th>Tezis</th><th>Score</th><th>Assessed By</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.teacher.get_full_name }}</td>
+            <td>{{ task.get_task_type_display }}</td>
+            <td>{% if task.maqola %}<a href="{{ task.maqola.url }}" target="_blank">Download</a>{% endif %}</td>
+            <td>{% if task.tezis %}<a href="{{ task.tezis.url }}" target="_blank">Download</a>{% endif %}</td>
+            <td>{{ task.score }}</td>
+            <td>{{ task.kafedra.get_full_name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

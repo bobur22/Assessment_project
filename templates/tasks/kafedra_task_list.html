@@ -1,0 +1,23 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Kafedra Task Review{% endblock %}
+{% block content %}
+<h2>Tasks to Assess</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Teacher</th><th>Type</th><th>Maqola</th><th>Tezis</th><th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.teacher.get_full_name }}</td>
+            <td>{{ task.get_task_type_display }}</td>
+            <td>{% if task.maqola %}<a href="{{ task.maqola.url }}">Download</a>{% endif %}</td>
+            <td>{% if task.tezis %}<a href="{{ task.tezis.url }}">Download</a>{% endif %}</td>
+            <td><a href="{% url 'assess-task' task.id %}" class="btn btn-warning btn-sm">Assess</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

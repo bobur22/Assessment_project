@@ -138,6 +138,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 STATICFILES_DIRS = BASE_DIR / 'assets',
 
+LOGIN_URL = '/account/log-in/'
+LOGIN_REDIRECT_URL = '/teacher/tasks/'  # Just a default; not used in your custom view
+LOGOUT_REDIRECT_URL = 'login'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
