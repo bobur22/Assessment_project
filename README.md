@@ -4,7 +4,7 @@
 
 
 ## First of all you have to clone this project to your own computer.
-    git clone git@github.com:bobur22/Kandy-pre-school.git
+    git clone git@github.com:bobur22/Assessment_project.git
 ## And then open your terminal and start creating by env file
       python3 -m venv venv
 ## then activate env file.
