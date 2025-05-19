@@ -13,8 +13,8 @@
         <tr>
             <td>{{ task.teacher.get_full_name }}</td>
             <td>{{ task.get_task_type_display }}</td>
-            <td>{% if task.maqola %}<a href="{{ task.maqola.url }}">Download</a>{% endif %}</td>
-            <td>{% if task.tezis %}<a href="{{ task.tezis.url }}">Download</a>{% endif %}</td>
+            <td>{% if task.maqola %}<a href="{{ task.maqola.url }}" target="_blank">Download</a>{% endif %}</td>
+            <td>{% if task.tezis %}<a href="{{ task.tezis.url }}" target="_blank">Download</a>{% endif %}</td>
             <td><a href="{% url 'assess-task' task.id %}" class="btn btn-warning btn-sm">Assess</a></td>
         </tr>
         {% endfor %}
