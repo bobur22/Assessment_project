@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-3">Vazifani baholash</h2>
+
+    <div class="mb-3">
+        <p><strong>Ustoz:</strong> {{ task.teacher.get_full_name }}</p>
+        <p><strong>Vazifa turi:</strong> {{ task.get_task_type_display }}</p>
+        <p><strong>Maqola:</strong> <a href="{{ task.maqola.url }}" target="_blank">Ko‘rish</a></p>
+        <p><strong>Tezis:</strong> <a href="{{ task.tezis.url }}" target="_blank">Ko‘rish</a></p>
+    </div>
+
+    <form method="post" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-success">Bahoni saqlash</button>
+        <a href="{% url 'task_list' %}" class="btn btn-secondary">Orqaga</a>
+    </form>
+</div>
+{% endblock %}

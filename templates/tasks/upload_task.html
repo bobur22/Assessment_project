@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Vazifa yuklash</h2>
+    <form method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary">Yuborish</button>
+    </form>
+</div>
+{% endblock %}
