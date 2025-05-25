@@ -1,23 +1,45 @@
 {% extends 'layouts/base.html' %}
 {% block title %}Kafedra Task Review{% endblock %}
+
 {% block content %}
-<h2>Tasks to Assess</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Teacher</th><th>Type</th><th>Maqola</th><th>Tezis</th><th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for task in tasks %}
-        <tr>
-            <td>{{ task.teacher.get_full_name }}</td>
-            <td>{{ task.get_task_type_display }}</td>
-            <td>{% if task.maqola %}<a href="{{ task.maqola.url }}" target="_blank">Download</a>{% endif %}</td>
-            <td>{% if task.tezis %}<a href="{{ task.tezis.url }}" target="_blank">Download</a>{% endif %}</td>
-            <td><a href="{% url 'assess-task' task.id %}" class="btn btn-warning btn-sm">Assess</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="container mt-4">
+        <h2 class="mb-4">Baholanishi kerak bo'lgan vazifalar</h2>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+            <tr>
+                <th>Ustoz</th>
+                <th>Vazifa turi</th>
+                <th>Yuklangan tur</th>
+                <th>Fayl</th>
+                <th>Amal</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>
+                        {% if task.teacher.get_full_name != "" %}
+                            {{ task.teacher.get_full_name }}
+                            {% else %}
+                            {{ task.teacher.email }}
+                        {% endif %}
+                    </td>
+                    <td>{{ task.get_task_type_display }}</td>
+                    <td>{{ task.get_task_upload_display }}</td>
+                    <td>
+                        {% if task.task_upload_by %}
+                            <a href="{{ task.task_upload_by.url }}" target="_blank">Yuklab olish</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'assess-task' task.id %}" class="btn btn-warning btn-sm">Baholash</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

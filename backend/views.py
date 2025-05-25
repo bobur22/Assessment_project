@@ -2,20 +2,40 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.timezone import now
 from django.contrib import messages
+from django.http import JsonResponse
+from django.db.models import Count
 
-from .models import TaskSubmission
-from .forms import TaskSubmissionForm, TaskAssessmentForm
+from .models import TaskSubmission, KafedraMaterial, StudentAwards
+from user.models import User
+from .forms import TaskSubmissionForm, TaskAssessmentForm, TeacherCreateForm, KafedraMaterialForm, StudentAwardsForm
+
+from django.views.generic import ListView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.urls import reverse_lazy
 
 
 # Utility functions to check roles
 def is_teacher(user):
     return user.is_authenticated and user.role == 'ustoz'
 
+
 def is_kafedra(user):
     return user.is_authenticated and user.role == 'kafedra'
 
+
 def is_dekan(user):
     return user.is_authenticated and user.role == 'dekan'
+
+
+def is_award_user(user):
+    return user.is_authenticated and user.role == 'award_manager'
+
+def is_award_user_or_dekan(user):
+    return user.is_authenticated and (user.role == User.Role.KAFEDRA or user.role == User.Role.DEKAN or user.role == 'award_manager')
+
+
+def is_kafedra_or_dekan(user):
+    return user.is_authenticated and (user.role == User.Role.KAFEDRA or user.role == User.Role.DEKAN)
 
 
 # ======================= Teacher Views =======================
@@ -28,9 +48,11 @@ def home_redirect(request):
         elif request.user.role == 'kafedra':
             return redirect('kafedra-task-list')
         elif request.user.role == 'dekan':
-            return redirect('dekan-task-list')
-    else:
-        return redirect('login')
+            return redirect('dekan-dashboard')
+        elif request.user.role == 'award_manager':
+            return redirect('awards_list')
+    # ✅ Always return something
+    return redirect('login')  # or a default homepage
 
 
 @login_required
@@ -50,9 +72,12 @@ def upload_task(request):
             task.teacher = request.user
             task.save()
             messages.success(request, 'Vazifa muvaffaqiyatli yuklandi!')
-            return redirect('teacher-task-list')
+            return redirect('teacher-task-list')  # adjust as needed
+        else:
+            messages.error(request, "Iltimos, formani to'g'ri to'ldiring.")
     else:
         form = TaskSubmissionForm()
+
     return render(request, 'tasks/upload_task.html', {'form': form})
 
 
@@ -98,8 +123,114 @@ def assess_task(request, task_id):
 
 # ======================= Dekan Views =======================
 
+
+@login_required
+@user_passes_test(is_kafedra_or_dekan)
+def dekan_dashboard(request):
+    return render(request, 'tasks/dekan_dashboard.html')
+
+
+@login_required
+@user_passes_test(is_kafedra_or_dekan)
+def dashboard_data(request):
+    # Example: Count of TaskSubmissions by task_type
+    task_type_counts = TaskSubmission.objects.values('task_type').annotate(count=Count('id'))
+    task_type_data = {item['task_type']: item['count'] for item in task_type_counts}
+
+    # Example: Count of StudentAwards by task_type
+    award_type_counts = StudentAwards.objects.values('task_type').annotate(count=Count('id'))
+    award_type_data = {item['task_type']: item['count'] for item in award_type_counts}
+
+    return JsonResponse({
+        'task_type_data': task_type_data,
+        'award_type_data': award_type_data,
+    })
+
+
 @login_required
 @user_passes_test(is_dekan)
 def dekan_task_list(request):
     tasks = TaskSubmission.objects.all().order_by('-submitted_at')
     return render(request, 'tasks/dekan_task_list.html', {'tasks': tasks})
+
+
+# ======================= Kafedra Teacher Views =======================
+
+
+@login_required
+@user_passes_test(is_kafedra_or_dekan)
+def teacher_list_view(request):
+    teachers = User.objects.filter(role=User.Role.USTOZ)
+    return render(request, 'kafedra/teacher_list.html', {'teachers': teachers})
+
+
+@login_required
+@user_passes_test(is_kafedra)
+def teacher_create_view(request):
+    if request.method == 'POST':
+        form = TeacherCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('teacher_list')
+    else:
+        form = TeacherCreateForm()
+    return render(request, 'kafedra/teacher_create.html', {'form': form})
+
+
+# ======================= Awards manager Views =======================
+
+
+@login_required
+@user_passes_test(is_award_user)
+def create_student_award(request):
+    if request.method == 'POST':
+        form = StudentAwardsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('awards_list')
+        else:
+            print(form.errors)  # Add this line to see errors in console
+    else:
+        form = StudentAwardsForm()
+    return render(request, 'awards/create_award.html', {'form': form})
+
+
+@login_required
+@user_passes_test(is_award_user_or_dekan)
+def awards_list(request):
+    awards = StudentAwards.objects.all().order_by('-created_at')
+    return render(request, 'awards/awards_list.html', {'awards': awards})
+
+
+# ======================= Kafedra Materialls Views =======================
+
+
+class MaterialListView(LoginRequiredMixin, ListView):
+    model = KafedraMaterial
+    template_name = 'kafedra/material_list.html'
+    context_object_name = 'materials'
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'kafedra':
+            return KafedraMaterial.objects.filter(kafedra=user)
+        elif user.role == 'ustoz':
+            return KafedraMaterial.objects.filter(teachers=user)
+        elif user.role == 'dekan':
+            return KafedraMaterial.objects.all()
+        return KafedraMaterial.objects.none()
+
+
+class MaterialCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = KafedraMaterial
+    form_class = KafedraMaterialForm
+    template_name = 'kafedra/material_create.html'
+    success_url = reverse_lazy('material_list')
+
+    def form_valid(self, form):
+        form.instance.kafedra = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        return self.request.user.role == 'kafedra'
+

@@ -1,0 +1,37 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>Ustozlar ro'yxati</h2>
+        {% if request.user.role == 'kafedra' %}
+            <a href="{% url 'teacher_create' %}" class="btn btn-success mb-3">+ Ustoz qo'shish</a>
+        {% endif %}
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Ismi</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Teacher Type</th>
+                <th>Tajriba</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for teacher in teachers %}
+                <tr>
+                    <td>{{ teacher.full_name }}</td>
+                    <td>{{ teacher.email }}</td>
+                    <td>{{ teacher.p_number }}</td>
+                    <td>{{ teacher.teacher_type }}</td>
+                    <td>{{ teacher.experience }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">Ustozlar topilmadi.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

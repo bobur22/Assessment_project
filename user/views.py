@@ -28,6 +28,8 @@ def login_view(request):
                     return redirect('kafedra-task-list')
                 elif user.role == 'dekan':
                     return redirect('dekan-task-list')
+                elif user.role == 'award_manager':
+                    return redirect('awards_list')
                 else:
                     return redirect('login')  # fallback
 

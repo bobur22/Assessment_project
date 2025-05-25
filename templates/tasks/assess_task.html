@@ -1,14 +1,32 @@
 {% extends 'layouts/base.html' %}
 {% block title %}Assess Task{% endblock %}
+
 {% block content %}
-<h2>Assess Task of {{ task.teacher.get_full_name }}</h2>
-<p><strong>Task Type:</strong> {{ task.get_task_type_display }}</p>
-<p><strong>Maqola:</strong> {% if task.maqola %}<a href="{{ task.maqola.url }}">Download</a>{% endif %}</p>
-<p><strong>Tezis:</strong> {% if task.tezis %}<a href="{{ task.tezis.url }}">Download</a>{% endif %}</p>
+<h2>Vazifani baholash: {{ task.title }}</h2>
+
+<div class="mb-3">
+    <p><strong>Ustoz:</strong> {{ task.teacher.get_full_name }}</p>
+    <p><strong>Vazifa turi:</strong> {{ task.get_task_type_display }}</p>
+    <p><strong>Yuklangan tur:</strong> {{ task.get_task_upload_display }}</p>
+    <p><strong>Yuklangan fayl:</strong>
+        {% if task.task_upload_by %}
+            <a href="{{ task.task_upload_by.url }}" target="_blank">Yuklab olish</a>
+        {% else %}
+            <em>Fayl yo'q</em>
+        {% endif %}
+    </p>
+    <p><strong>Topshirish sanasi:</strong> {{ task.date|date:"Y-m-d" }}</p>
+    {% if task.jurnal %}
+        <p><strong>Jurnal:</strong> {{ task.jurnal }}</p>
+    {% endif %}
+    <p><strong>Yuklangan vaqti:</strong> {{ task.submitted_at|date:"Y-m-d H:i" }}</p>
+</div>
+
+<hr>
 
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Submit Assessment</button>
+    <button type="submit" class="btn btn-success">Baholash</button>
 </form>
 {% endblock %}

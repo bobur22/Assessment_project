@@ -1,29 +1,55 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Assessment System</a>
+        <a class="navbar-brand" href="#">Assessment System: role({{ request.user.role }})</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
-                    {% if  user.role == "ustoz" %}
+
+                    {% if user.role == "ustoz" %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'teacher-task-list' %}">My Tasks</a>
+                        </li>
+                    {% endif %}
+
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'teacher-task-list' %}">My Tasks</a>
+                        <a class="nav-link" href="{% url 'material_list' %}">Kafedra Materiallari</a>
                     </li>
-                        {% endif %} 
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dekan-dashboard' %}">Dashboard</a>
+                    </li>
+
                     {% if user.role == "kafedra" %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'kafedra-assessed-tasks' %}">Baholangan vazifalar</a>
                         </li>
-                    {% endif %}
-
-                    {% if user.role == "kafedra" %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'kafedra-task-list' %}">Kafedra Panel</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'teacher_list' %}">Ustozlar ro'yxati</a>
                         </li>
                     {% elif user.role == "dekan" %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'dekan-task-list' %}">Dekan View</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'teacher_list' %}">Ustozlar ro'yxati</a>
+                        </li>
                     {% endif %}
+
+                    {% if user.role == "award_manager" %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'create_student_award' %}">Create Achievement</a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.role in "award_manager kafedra dekan" %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'awards_list' %}">Achievements List</a>
+                        </li>
+                    {% endif %}
+
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                     </li>

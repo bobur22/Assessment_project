@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from .validators import PhoneValidator, validate_f_name
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -21,11 +22,18 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     class Role(models.TextChoices):
         DEKAN = 'dekan', 'Dekan'
         KAFEDRA = 'kafedra', 'Kafedra'
         USTOZ = 'ustoz', 'Ustoz'
+        AWARD_MANAGER = 'award_manager', 'Achievement Manager'
+
+    class TeacherType(models.TextChoices):
+        KAFEDRA_USTOZ = 'kafedra_ustoz', 'Kafedra ustoz'
+        PHD_USTOZ = 'phd_ustoz', 'PhD ustoz'
+        DSC_USTOZ = 'dsc_ustoz', 'DSc ustoz'
 
     full_name = models.CharField(
         max_length=255,
@@ -49,6 +57,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         choices=Role.choices,
         default=Role.USTOZ
     )
+
+    teacher_type = models.CharField(
+        max_length=20,
+        choices=TeacherType.choices,
+        default=TeacherType.KAFEDRA_USTOZ,
+        blank=True,
+        null=True,
+        verbose_name="Ustoz turi"
+    )
+    experience = models.CharField(
+        max_length=255,
+        default="",
+        blank=True,
+        null=True,
+        verbose_name="Tajriba"
+    )
+
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -79,3 +104,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def is_dekan(self):
         return self.role == self.Role.DEKAN
+
+    def is_award_manager(self):
+        return self.role == self.Role.AWARD_MANAGER
