@@ -11,7 +11,7 @@ urlpatterns = [
     # Kafedra URLs
     path('kafedra/tasks/', views.kafedra_task_list, name='kafedra-task-list'),
     path('kafedra/assessed/', views.kafedra_assessed_tasks, name='kafedra-assessed-tasks'),
-    path('kafedra/assess/<int:task_id>/', views.assess_task, name='assess-task'),
+    path('kafedra/assess/<int:task_id>/', views.assess_task, name='assess_task'),
 
     # Kafedra teacher URLs
     path('teachers/', views.teacher_list_view, name='teacher_list'),

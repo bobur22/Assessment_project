@@ -27,7 +27,7 @@ def login_view(request):
                 elif user.role == 'kafedra':
                     return redirect('kafedra-task-list')
                 elif user.role == 'dekan':
-                    return redirect('dekan-task-list')
+                    return redirect('dekan-dashboard')
                 elif user.role == 'award_manager':
                     return redirect('awards_list')
                 else:

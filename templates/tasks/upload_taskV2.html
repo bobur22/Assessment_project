@@ -1,0 +1,26 @@
+{% extends 'layouts/baseV2.html' %}
+
+{% block title %}Teachers Upload{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button class="btn btn-primary"><a href="{% url 'teacher-task-list' %}"
+                                                               style="color: white; text-decoration: none">Orqaga</a>
+                            </button>
+                            <button type="submit" class="btn btn-primary">Yuklash</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

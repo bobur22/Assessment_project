@@ -1,0 +1,155 @@
+{% load static %}
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex justify-content-center align-items-end" href="{% url 'dekan-dashboard' %}">
+        <div class="sidebar-brand-icon">
+            <img src="{% static 'main/img/undraw_rocket.svg' %}" alt="Logo" style="height: 40px;">
+        </div>
+        <div class="sidebar-brand-text fs-6 fw-normal" style="text-transform: none">Baholash Tizimi</div>
+    </a>
+    {% if user.role != "award_manager" %}
+        {% if user.role != 'ustoz' %}
+            
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            {% url 'dekan-dashboard' as dashboard %}
+            <li class="nav-item {% if request.path == dashboard %}active{% endif %}">
+                <a class="nav-link" href="{{ dashboard }}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Statistika Paneli</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Baholash qismi
+            </div>
+
+            {% if user.role == "dekan" %}
+                {% url 'dekan-task-list' as dekan_task_list %}
+                <li class="nav-item {% if request.path == dekan_task_list %}active{% endif %}">
+                    <a class="nav-link" href="{{ dekan_task_list }}">
+                        <i class="fas fa-solid fa-check-circle"></i>
+                        <span>Baholangan Vazifalar</span></a>
+                </li>
+
+            {% elif user.role == "kafedra" %}
+
+                {% url 'kafedra-assessed-tasks' as kafedra_assessed_tasks %}
+                <li class="nav-item {% if request.path == kafedra_assessed_tasks %}active{% endif %}">
+                    <a class="nav-link" href="{{ kafedra_assessed_tasks }}">
+                        <i class="fas fa-solid fa-check-circle"></i>
+                        <span>Baholangan Vazifalar</span></a>
+                </li>
+
+            {% endif %}
+
+            {% if user.role == "kafedra" %}
+
+                {% url 'kafedra-task-list' as kafedra_task_list %}
+                <li class="nav-item {% if request.path == kafedra_task_list or "/kafedra/assess/" in request.path %}active{% endif %}">
+                    <a class="nav-link" href="{{ kafedra_task_list }}">
+                        <i class="fas fa-solid fa-hourglass-start"></i>
+                        <span>Baholanmagan Vazifalar</span></a>
+                </li>
+
+            {% endif %}
+
+        {% endif %}
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
+            Kafedra qismi
+        </div>
+
+        {% url 'material_list' as material_list %}
+        <li class="nav-item {% if request.path == material_list or "/materials/create/" in request.path %}active{% endif %}">
+            <a class="nav-link" href="{{ material_list }}">
+                <i class="fas fa-solid fa-clipboard-list"></i>
+                <span>Kafedra Materiallari</span></a>
+        </li>
+
+        {% if user.role != "award_manager" %}
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Ustoz qismi
+            </div>
+
+            {% if user.role == 'dekan' or user.role == 'kafedra' %}
+
+                {% url 'teacher_list' as teacher_list %}
+                <li class="nav-item {% if request.path == teacher_list or "/teachers/create/" in request.path %}active{% endif %}">
+                    <a class="nav-link" href="{{ teacher_list }}">
+                        <i class="fas fa-solid fa-chalkboard-user"></i>
+                        <span>O'qituvchilar</span></a>
+                </li>
+
+            {% else %}
+
+                {% url 'teacher-task-list' as teacher_task_list %}
+                <li class="nav-item {% if request.path == teacher_task_list or "/teacher/upload/" in request.path %}active{% endif %}">
+                    <a class="nav-link" href="{{ teacher_task_list }}">
+                        <i class="fas fa-solid fa-clock"></i>
+                        <span>Vazifalar</span></a>
+                </li>
+
+            {% endif %}
+
+        {% endif %}
+
+    {% endif %}
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        O'quvchi qismi
+    </div>
+
+    <!-- Nav Item - Tables -->
+    {% url 'awards_list' as awards_list %}
+    <li class="nav-item {% if request.path == awards_list %}active{% endif %}">
+        <a class="nav-link" href="{{ awards_list }}">
+            <i class="fas fa-fw fa-trophy"></i>
+            <span>O'quvchi sovrinlari</span></a>
+    </li>
+
+    {% if user.role == "award_manager" %}
+        <!-- Nav Item - Tables -->
+        {% url 'create_student_award' as create_student_award %}
+        <li class="nav-item {% if request.path == create_student_award %}active{% endif %}">
+            <a class="nav-link" href="{{ create_student_award }}">
+                <i class="fas fa-fw fa-signature"></i>
+                <span>Sovrin yaratish</span></a>
+        </li>
+    {% endif %}
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+    <!-- Sidebar Message -->
+    <div class="sidebar-card d-none d-lg-flex p-1">
+        <img class="sidebar-card-illustration mb-2" src="{% static 'main/img/logo/mAgencyLogo.png' %}" alt="...">
+        <p class="text-center mb-2"><strong>Mahsuloti</strong></p>
+    </div>
+
+</ul>

@@ -1,0 +1,89 @@
+{% extends 'layouts/baseV2.html' %}
+
+{% block title %}Teacher Materials{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="m-0 font-weight-bold text-primary">O'qituvchi Vazifalari({{ t_count }})</h6>
+                <div class="customsetBTN d-flex justify-content-end align-items-center col-8">
+
+                    <a href="{% url 'upload-task' %}"
+                       class="btn btn-sm btn-success d-inline-block shadow-sm ms-1"><i
+                            class="fas fa-plus fa-sm text-white-50"></i><span class="ps-2 d-none d-sm-inline-block">Yangi Vazifa Qo'shish</span></a>
+
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Turi</th>
+                            <th>Qanaqa Materialligi</th>
+                            <th>Materiall fayli</th>
+                            <th>Materiall nomi</th>
+                            <th>Materiall Chiqarilgan
+                                <Sana></Sana>
+                            </th>
+                            <th>Yuklangan Sana</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>#</th>
+                            <th>Turi</th>
+                            <th>Qanaqa Materialligi</th>
+                            <th>Materiall fayli</th>
+                            <th>Materiall nomi</th>
+                            <th>Materiall Chiqarilgan
+                                <Sana></Sana>
+                            </th>
+                            <th>Yuklangan Sana</th>
+                            <th>Status</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for task in tasks %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ task.get_task_type_display }}</td>
+                                <td>{{ task.get_task_upload_display }}</td>
+                                <td>
+                                    {% if task.task_upload_by %}
+                                        <a href="{{ task.task_upload_by.url }}" target="_blank">Download</a>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>{{ task.title }}</td>
+                                <td>{{ task.date|date:"Y-m-d" }}</td>
+                                <td>{{ task.submitted_at|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% if task.score is not None %}
+                                        ✅ {{ task.score }} points
+                                    {% else %}
+                                        ⏳ Not yet assessed
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center">No tasks uploaded yet.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock content %}

@@ -30,8 +30,10 @@ def is_dekan(user):
 def is_award_user(user):
     return user.is_authenticated and user.role == 'award_manager'
 
+
 def is_award_user_or_dekan(user):
-    return user.is_authenticated and (user.role == User.Role.KAFEDRA or user.role == User.Role.DEKAN or user.role == 'award_manager')
+    return user.is_authenticated and (
+                user.role == User.Role.KAFEDRA or user.role == User.Role.DEKAN or user.role == User.Role.AWARD_MANAGER or user.role == User.Role.USTOZ)
 
 
 def is_kafedra_or_dekan(user):
@@ -59,7 +61,8 @@ def home_redirect(request):
 @user_passes_test(is_teacher)
 def teacher_task_list(request):
     tasks = TaskSubmission.objects.filter(teacher=request.user).order_by('-submitted_at')
-    return render(request, 'tasks/teacher_task_list.html', {'tasks': tasks})
+    t_count = tasks.count()
+    return render(request, 'tasks/teacher_task_listV2.html', {'tasks': tasks, 't_count': t_count})
 
 
 @login_required
@@ -78,7 +81,7 @@ def upload_task(request):
     else:
         form = TaskSubmissionForm()
 
-    return render(request, 'tasks/upload_task.html', {'form': form})
+    return render(request, 'tasks/upload_taskV2.html', {'form': form})
 
 
 # ======================= Kafedra Views =======================
@@ -87,7 +90,8 @@ def upload_task(request):
 @user_passes_test(is_kafedra)
 def kafedra_task_list(request):
     tasks = TaskSubmission.objects.filter(score__isnull=True).order_by('-submitted_at')
-    return render(request, 'tasks/kafedra_task_list.html', {'tasks': tasks})
+    t_count = tasks.count()
+    return render(request, 'tasks/kafedra_task_listV2.html', {'tasks': tasks, 't_count': t_count})
 
 
 @login_required
@@ -99,8 +103,9 @@ def kafedra_assessed_tasks(request):
         kafedra=request.user,
         score__isnull=False  # Only those with a score
     ).order_by('-assessed_at')
+    t_tasks = tasks.count()
 
-    return render(request, 'tasks/kafedra_assessed_tasks.html', {'tasks': tasks})
+    return render(request, 'tasks/kafedra_assessed_tasksV2.html', {'tasks': tasks, 't_tasks': t_tasks})
 
 
 @login_required
@@ -118,7 +123,7 @@ def assess_task(request, task_id):
             return redirect('kafedra-task-list')
     else:
         form = TaskAssessmentForm(instance=task)
-    return render(request, 'tasks/assess_task.html', {'task': task, 'form': form})
+    return render(request, 'tasks/assess_taskV2.html', {'task': task, 'form': form})
 
 
 # ======================= Dekan Views =======================
@@ -127,7 +132,7 @@ def assess_task(request, task_id):
 @login_required
 @user_passes_test(is_kafedra_or_dekan)
 def dekan_dashboard(request):
-    return render(request, 'tasks/dekan_dashboard.html')
+    return render(request, 'tasks/dekan_dashboardV2.html')
 
 
 @login_required
@@ -151,7 +156,8 @@ def dashboard_data(request):
 @user_passes_test(is_dekan)
 def dekan_task_list(request):
     tasks = TaskSubmission.objects.all().order_by('-submitted_at')
-    return render(request, 'tasks/dekan_task_list.html', {'tasks': tasks})
+    t_count = tasks.count()
+    return render(request, 'tasks/assess_task_listV2.html', {'tasks': tasks, 't_count': t_count})
 
 
 # ======================= Kafedra Teacher Views =======================
@@ -161,7 +167,8 @@ def dekan_task_list(request):
 @user_passes_test(is_kafedra_or_dekan)
 def teacher_list_view(request):
     teachers = User.objects.filter(role=User.Role.USTOZ)
-    return render(request, 'kafedra/teacher_list.html', {'teachers': teachers})
+    t_count = teachers.count()
+    return render(request, 'kafedra/teacher_listV2.html', {'teachers': teachers, 't_count': t_count})
 
 
 @login_required
@@ -174,7 +181,7 @@ def teacher_create_view(request):
             return redirect('teacher_list')
     else:
         form = TeacherCreateForm()
-    return render(request, 'kafedra/teacher_create.html', {'form': form})
+    return render(request, 'kafedra/teacher_createV2.html', {'form': form})
 
 
 # ======================= Awards manager Views =======================
@@ -189,17 +196,17 @@ def create_student_award(request):
             form.save()
             return redirect('awards_list')
         else:
-            print(form.errors)  # Add this line to see errors in console
+            print(form.errors)
     else:
         form = StudentAwardsForm()
-    return render(request, 'awards/create_award.html', {'form': form})
+    return render(request, 'awards/create_awardV2.html', {'form': form})
 
 
 @login_required
 @user_passes_test(is_award_user_or_dekan)
 def awards_list(request):
     awards = StudentAwards.objects.all().order_by('-created_at')
-    return render(request, 'awards/awards_list.html', {'awards': awards})
+    return render(request, 'awards/awards_listV2.html', {'awards': awards})
 
 
 # ======================= Kafedra Materialls Views =======================
@@ -207,8 +214,13 @@ def awards_list(request):
 
 class MaterialListView(LoginRequiredMixin, ListView):
     model = KafedraMaterial
-    template_name = 'kafedra/material_list.html'
+    template_name = 'kafedra/material_listV2.html'
     context_object_name = 'materials'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['material_count'] = self.get_queryset().count()
+        return context
 
     def get_queryset(self):
         user = self.request.user
@@ -224,7 +236,7 @@ class MaterialListView(LoginRequiredMixin, ListView):
 class MaterialCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = KafedraMaterial
     form_class = KafedraMaterialForm
-    template_name = 'kafedra/material_create.html'
+    template_name = 'kafedra/material_createV2.html'
     success_url = reverse_lazy('material_list')
 
     def form_valid(self, form):
@@ -233,4 +245,3 @@ class MaterialCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def test_func(self):
         return self.request.user.role == 'kafedra'
-

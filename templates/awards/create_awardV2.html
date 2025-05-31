@@ -1,0 +1,43 @@
+{% extends 'layouts/baseV2.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Awards{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <form action="{% url 'create_student_award' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+
+                            {% if form.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    <ul>
+                                        {% for field in form %}
+                                            {% for error in field.errors %}
+                                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                                <a href="{% url 'awards_list' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
