@@ -6,21 +6,21 @@
 ## First of all you have to clone this project to your own computer.
     git clone git@github.com:bobur22/Assessment_project.git
 ## And then open your terminal and start creating by env file
-      python3 -m venv venv
+      python -m venv venv / py -m venv venv
 ## then activate env file.
 ## And after that start with installing requirements.txt
     pip install -r requirements.txt
 ## then make a migrations.
-    ./manage.py makemigrations
+    python manage.py makemigrations
 
 ## and after that migrate it.
-    ./manage.py migrate
+    python manage.py migrate
 
 ## before runing server create super user in order to open admin panel.
-    ./manage.py createsuperuser
+    python manage.py createsuperuser
 
 ## then finally start project.
-    ./manage.py runserver
+    python manage.py runserver
 
 #Then you can open website on your local host.
 ## and project is ready.
