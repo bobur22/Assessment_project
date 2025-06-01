@@ -71,7 +71,6 @@ class KafedraMaterialForm(forms.ModelForm):
         }
 
 
-
 class StudentAwardsForm(forms.ModelForm):
     class Meta:
         model = StudentAwards

@@ -33,7 +33,7 @@ def is_award_user(user):
 
 def is_award_user_or_dekan(user):
     return user.is_authenticated and (
-                user.role == User.Role.KAFEDRA or user.role == User.Role.DEKAN or user.role == User.Role.AWARD_MANAGER or user.role == User.Role.USTOZ)
+            user.role == User.Role.KAFEDRA or user.role == User.Role.DEKAN or user.role == User.Role.AWARD_MANAGER or user.role == User.Role.USTOZ)
 
 
 def is_kafedra_or_dekan(user):
@@ -132,7 +132,14 @@ def assess_task(request, task_id):
 @login_required
 @user_passes_test(is_kafedra_or_dekan)
 def dekan_dashboard(request):
-    return render(request, 'tasks/dekan_dashboardV2.html')
+    kafedra = User.objects.all().filter(role=User.Role.KAFEDRA).count()
+    ustoz = User.objects.all().filter(role=User.Role.USTOZ).count()
+    award = StudentAwards.objects.all().count()
+    tasks = TaskSubmission.objects.all().count()
+    tasks = round(tasks / ustoz / 2 * tasks)
+
+    print(kafedra, ustoz, award, tasks)
+    return render(request, 'dashboard/dashboardV2.html', {'kafedra': kafedra, 'ustoz': ustoz, 'tasks': tasks, 'award': award})
 
 
 @login_required

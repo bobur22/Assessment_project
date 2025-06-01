@@ -11,17 +11,21 @@
     </a>
     {% if user.role != "award_manager" %}
         {% if user.role != 'ustoz' %}
-            
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
 
-            <!-- Nav Item - Dashboard -->
-            {% url 'dekan-dashboard' as dashboard %}
-            <li class="nav-item {% if request.path == dashboard %}active{% endif %}">
-                <a class="nav-link" href="{{ dashboard }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Statistika Paneli</span></a>
-            </li>
+            {% if user.role == 'dekan' %}
+
+                <!-- Divider -->
+                <hr class="sidebar-divider my-0">
+
+                <!-- Nav Item - Dashboard -->
+                {% url 'dekan-dashboard' as dashboard %}
+                <li class="nav-item {% if request.path == dashboard %}active{% endif %}">
+                    <a class="nav-link" href="{{ dashboard }}">
+                        <i class="fas fa-fw fa-tachometer-alt"></i>
+                        <span>Statistika Paneli</span></a>
+                </li>
+
+            {% endif %}
 
             <!-- Divider -->
             <hr class="sidebar-divider">
